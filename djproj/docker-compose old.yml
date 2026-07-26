@@ -1,0 +1,41 @@
+
+services:
+  db:   # ← THIS was missing
+    image: postgres:16
+    platform: linux/amd64  
+    container_name: postgres-test
+    restart: always
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypass
+      POSTGRES_DB: mydb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - mynetwork
+
+  django:
+    platform: linux/amd64  
+    build: .
+    command: python manage.py runserver 0.0.0.0:8003
+    volumes:
+      - .:/app
+    ports:
+      - "8003:8003"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgres://myuser:mypass@db:5432/mydb
+    networks:
+      - mynetwork
+
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  mynetwork:
+    external: true

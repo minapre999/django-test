@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  server:
+    container_name: django-test
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    entrypoint: /code/entrypoint.sh
+    volumes:
+      - .:/code
+      - static_volume:/code/staticfiles
+    ports:
+      - "8000:8000"
+    environment:
+      DEBUG: "False"
+      SECRET_KEY: ${SECRET_KEY}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS}
+      CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS}
+      # DATABASE_URL: ${DATABASE_URL}
+
+volumes:
+  static_volume: {}
